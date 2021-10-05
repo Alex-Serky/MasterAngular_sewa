@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+// Remplacer l’importation du CommonModule par cette ligne :
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
+    SharedModule
   ]
 })
 export class WorkdayModule { }

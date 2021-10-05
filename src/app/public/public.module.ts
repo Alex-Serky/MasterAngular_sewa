@@ -1,20 +1,16 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
+// Remplacer l’importation du CommonModule par cette ligne :
+import { SharedModule } from 'src/app/shared/shared.module';
 import { PublicRoutingModule } from './public-routing.module';
-import { HomeModule } from './home/home.module';
-import { RegisterModule } from './register/register.module';
-import { LoginModule } from './login/login.module';
+
 
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule,
-    PublicRoutingModule,
-    HomeModule,
-    RegisterModule,
-    LoginModule
+    // Impoter le SharedModule plutôt que le CommonModule :
+    SharedModule,
+    PublicRoutingModule
   ]
 })
 export class PublicModule { }
