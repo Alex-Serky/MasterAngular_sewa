@@ -5,11 +5,13 @@ import { ProtectedModule } from '../protected/protected.module';
 // Ajouter cette importation :
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 
 @NgModule({
   declarations: [
-    NavbarComponent
+    NavbarComponent,
+    FooterComponent
   ],
   imports: [
     CommonModule,
@@ -18,7 +20,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     ProtectedModule
   ],
   exports: [
-    NavbarComponent
+    NavbarComponent,
+    FooterComponent
   ]
 })
 export class CoreModule {
