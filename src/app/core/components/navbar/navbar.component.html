@@ -3,16 +3,17 @@
         <a class="navbar-brand">Séwa List</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link">Accueil</a>
+                <!-- La redirection et la mise en gras du lien courant -->
+                <li [class.active]="isActive(homePath)" class="nav-item">
+                    <a (click)="navigate(homePath)" class="nav-link">Accueil</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link">Connexion</a>
+                <li [class.active]="isActive(loginPath)" class="nav-item">
+                    <a (click)="navigate(loginPath)" class="nav-link">Connexion</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link">Inscription</a>
+                <li [class.active]="isActive(registerPath)" class="nav-item">
+                    <a (click)="navigate(registerPath)" class="nav-link">Inscription</a>
                 </li>
             </ul>
         </div>
