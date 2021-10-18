@@ -5,11 +5,14 @@ import { ParametersComponent } from './parameters/parameters/parameters.componen
 import { PlanningComponent } from './planning/planning/planning.component';
 import { ProfilComponent } from './profil/profil/profil.component';
 import { WorkdayComponent } from './workday/workday/workday.component';
+import { ProtectedComponent } from './protected.component';
 
 
 const routes: Routes = [
-  { path: 'app',
-    children: [
+  {
+    path: 'app',
+    component: ProtectedComponent,
+    children: [ // Les composants filles
       { path: 'dashboard', component: DashboardComponent },
       { path: 'parameters', component: ParametersComponent },
       { path: 'planning', component: PlanningComponent },
