@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
-// Remplacer l’importation du CommonModule par cette ligne :
+// Remplacer l'importation du CommonModule par cette ligne :
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ProfilRoutingModule } from './profil-routing.module';
 import { ProfilComponent } from './profil/profil.component';
 
 
@@ -10,7 +11,8 @@ import { ProfilComponent } from './profil/profil.component';
     ProfilComponent
   ],
   imports: [
-    SharedModule
+    SharedModule,
+    ProfilRoutingModule
   ]
 })
 export class ProfilModule { }

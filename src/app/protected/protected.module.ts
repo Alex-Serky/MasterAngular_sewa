@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
-// Remplacer l’importation du CommonModule par cette ligne :
+// Remplacer l'importation du CommonModule par cette ligne :
 import { SharedModule } from 'src/app/shared/shared.module';
-
 import { ProtectedRoutingModule } from './protected-routing.module';
 import { ProtectedComponent } from './protected.component';
 
@@ -11,7 +10,7 @@ import { ProtectedComponent } from './protected.component';
     ProtectedComponent
   ],
   imports: [
-    // Impoter le SharedModule plutôt que le CommonModule :
+    // Importer le SharedModule plutôt que le CommonModule :
     SharedModule,
     ProtectedRoutingModule
   ]
