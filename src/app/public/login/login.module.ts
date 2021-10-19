@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 // Remplacer l’importation du CommonModule par cette ligne :
 import { SharedModule } from 'src/app/shared/shared.module';
 import { LoginComponent } from './login/login.component';
+import { LoginRoutingModule } from './login/login-routing.module';
 
 
 
@@ -10,7 +11,8 @@ import { LoginComponent } from './login/login.component';
     LoginComponent
   ],
   imports: [
-    SharedModule
+    SharedModule,
+    LoginRoutingModule
   ]
 })
 export class LoginModule { }
