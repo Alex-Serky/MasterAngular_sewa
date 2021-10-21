@@ -17,9 +17,9 @@ import { PlanningWorkdayItemComponent } from './planning-workday-item/planning-w
     SharedModule,
     PlanningRoutingModule
   ],
-  // exports: [
-  //   PlanningWorkdayListComponent,
-  //   PlanningWorkdayItemComponent
-  // ],
+  exports: [
+    PlanningWorkdayListComponent,
+    PlanningWorkdayItemComponent
+  ],
 })
 export class PlanningModule { }
