@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'al-register-form',
@@ -20,9 +20,21 @@ export class RegisterFormComponent implements OnInit {
   ngOnInit(): void {
     // On définit le formulaire
     this.registerForm = this.fb.group({
-      'name': '',
-      'email': '',
-      'password': ''
+      'name': ['', [
+        Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(20),
+        Validators.pattern('^[a-zA-Z0-9_-]*$')
+      ]],
+      'email': ['', [
+        Validators.required,
+        Validators.email
+      ]],
+      'password': ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(20)
+      ]]
     })
   }
 
