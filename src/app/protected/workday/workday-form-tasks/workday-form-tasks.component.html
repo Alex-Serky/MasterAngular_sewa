@@ -5,4 +5,9 @@
         [task]="task">
         </al-workday-form-tasks-item>
     </div>
+    <!-- Ajoutez notre bouton d’ajout d’une tâche : -->
+    <div class="text-center mt-5">
+        <al-workday-form-tasks-add (addedTask)="onAddedTask()">
+        </al-workday-form-tasks-add>
+    </div>
 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'al-workday-form-tasks',
@@ -13,8 +13,18 @@ export class WorkdayFormTasksComponent implements OnInit {
 
   taskControlList: FormGroup[];
 
+  constructor(private fb: FormBuilder) { }
+
   ngOnInit(): void {
     this.taskControlList = this.tasks.controls as FormGroup[];
+  }
+
+  // Méthode qui permet d'instancier un nouveau FormGroup contenant simplement un titre de tâche vide
+  onAddedTask() {
+    const taskGroup: FormGroup = this.fb.group({
+      'title': ''
+    });
+    this.tasks.push(taskGroup);
   }
 
 }
