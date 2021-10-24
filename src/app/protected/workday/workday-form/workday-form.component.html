@@ -3,7 +3,7 @@
     <!-- Ajouter les deux liaisons de propriétés workdayForm et tasks : -->
     <al-workday-form-tasks [workdayForm]="workdayForm" [tasks]="tasks">
     </al-workday-form-tasks>
-    <al-workday-form-notes></al-workday-form-notes>
+    <al-workday-form-notes [notes]="notes"></al-workday-form-notes>
 
     <div class="text-right">
         <button
@@ -15,5 +15,3 @@
         </button>
     </div>
 </form>
-
-{{ workdayForm.value | json }}
