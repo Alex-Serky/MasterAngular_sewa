@@ -11,6 +11,7 @@ export class WorkdayFormTasksComponent implements OnInit {
   @Input() tasks: FormArray;
   @Input() workdayForm: FormGroup;
 
+
   taskControlList: FormGroup[];
 
   constructor(private fb: FormBuilder) { }
@@ -25,6 +26,10 @@ export class WorkdayFormTasksComponent implements OnInit {
       'title': ''
     });
     this.tasks.push(taskGroup);
+  }
+
+  onRemovedTask(index: number) {
+    this.tasks.removeAt(index);
   }
 
 }
