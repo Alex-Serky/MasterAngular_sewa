@@ -9,6 +9,11 @@ import { Toastr } from 'src/app/shared/models/toastr';
 export class ToastrService {
 
   private toastr: BehaviorSubject<Toastr|null> = new BehaviorSubject<Toastr|null>(null);
+
+  public closeToastr() {
+    this.toastr.next(null);
+  }
+
   readonly toastr$: Observable<Toastr|null> = this.toastr.asObservable();
 
   constructor() { }
@@ -23,4 +28,6 @@ export class ToastrService {
       }
     });
   }
+
+
 }
