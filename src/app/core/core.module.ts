@@ -7,13 +7,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { LoaderComponent } from './components/loader/loader.component';
 
 
 @NgModule({
   declarations: [
     NavbarComponent,
     FooterComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    LoaderComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,8 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
   exports: [
     NavbarComponent,
     FooterComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    LoaderComponent
   ]
 })
 export class CoreModule {
