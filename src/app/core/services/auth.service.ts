@@ -55,6 +55,7 @@ export class AuthService {
         name: name
         });
         // On sauvegarde les informations de connexion de l'utilisateur.
+        this.saveAuthData(data.localId, jwt);
         return this.usersService.save(user, jwt);
       }),
       // Pousser l'utilisateur qui vient de s'inscrire dans l'état du service.
@@ -85,6 +86,8 @@ export class AuthService {
       switchMap((data: any) => {
         const userId: string = data.localId;
         const jwt: string = data.idToken;
+        // On sauvegarde les informations de connexion de l'utilisateur.
+        this.saveAuthData(data.localId, jwt);
         return this.usersService.get(userId, jwt);
       }),
       tap(user => this.user.next(user)), // Mettre à jour l'état du service
@@ -96,6 +99,9 @@ export class AuthService {
 
   // Déconnection
   public logout(): void {
+    localStorage.removeItem('expirationDate');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     this.user.next(null);
     this.router.navigate(['/login']);
   }
@@ -105,6 +111,19 @@ export class AuthService {
     of(true).pipe(
       delay(expirationTime * 1000)
     ).subscribe(_ => this.logout());
+  }
+
+  private saveAuthData(userId: string, token: string) {
+    const now = new Date();
+    const expirationDate = (now.getTime() + 3600 * 1000).toString();
+    localStorage.setItem('expirationDate', expirationDate);
+    localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId);
+  }
+
+  public autoLogin(user: User) {
+    this.user.next(user);
+    this.router.navigate(['app/dashboard']);
   }
 
 }
