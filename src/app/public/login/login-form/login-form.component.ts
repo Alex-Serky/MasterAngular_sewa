@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
     selector: 'al-login-form',
@@ -15,7 +16,8 @@ export class LoginFormComponent implements OnInit {
     // On injecte le FormBuilder comme dépendance de notre composant
     constructor(
         private fb: FormBuilder,
-        private router: Router) { }
+        private router: Router,
+        private authService: AuthService,) { }
 
     ngOnInit(): void {
         // On définit le formulaire
@@ -37,10 +39,12 @@ export class LoginFormComponent implements OnInit {
 
     submit() {
         // On accède à toutes les valeurs du formulaire pour les afficher.
-
-        console.info(this.email?.value);
-        console.info(this.password?.value);
-        this.router.navigate(['/app/dashboard']); // On redirige l'utilisateur vers le tableau de bord.
+        this.authService
+            .login(this.email?.value, this.password?.value)
+            .subscribe(
+                _ => this.router.navigate(['/app/dashboard']), // On redirige l'utilisateur vers le tableau de bord.
+                _ => this.loginForm.reset() // On efface les données éronnées dans le formulaire avec reset
+            );
     }
 
 }

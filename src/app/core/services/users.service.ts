@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { User } from 'src/app/shared/models/user';
 import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
@@ -36,6 +35,25 @@ export class UsersService {
     );
   }
 
+  get(userId: string, jwt: string): Observable<User|null> {
+    const url =
+      `${environment.firebase.firestore.baseURL}:runQuery?key=
+      ${environment.firebase.apiKey}`;
+    const data = this.getStructuredQuery(userId);
+    const httpOptions = {
+      headers: new HttpHeaders({
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${jwt}`
+      })
+    };
+
+    return this.http.post(url, data, httpOptions).pipe(
+      switchMap((data: any) => {
+        return of(this.getUserFromFirestore(data[0].document.fields));
+      })
+    );
+  }
+
   private getUserFromFirestore(fields: any): User {
     return new User({
       id: fields.id.stringValue,
@@ -54,6 +72,24 @@ export class UsersService {
       name: { stringValue: user.name },
       avatar: { stringValue: user.avatar },
       pomodoroDuration: { integerValue: user.pomodoroDuration }
+      }
+    };
+  }
+
+  private getStructuredQuery(userId: string): Object {
+    return {
+      'structuredQuery': {
+      'from': [{
+        'collectionId': 'users'
+      }],
+      'where': {
+        'fieldFilter': {
+        'field': { 'fieldPath': 'id' },
+        'op': 'EQUAL',
+        'value': { 'stringValue': userId }
+        }
+      },
+      'limit': 1
       }
     };
   }

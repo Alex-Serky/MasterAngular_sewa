@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { UsersService } from './users.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';
+import { Router } from '@angular/router';
 
 
 
@@ -22,8 +23,10 @@ export class AuthService {
     private http: HttpClient,
     private usersService: UsersService,
     private errorService: ErrorService,
-    private loaderService: LoaderService) { }
+    private loaderService: LoaderService,
+    private router: Router) { }
 
+  // Inscription
   public register(name: string, email: string, password: string): Observable<User|null> {
     const url =
     `${environment.firebase.auth.baseURL}/signupNewUser?key=
@@ -60,6 +63,39 @@ export class AuthService {
       catchError(error => this.errorService.handleError(error)),
       finalize(() => this.loaderService.setLoading(false))
     );
+  }
+
+  // Connexion
+  public login(email: string, password: string): Observable<User|null> {
+    const url = `${environment.firebase.auth.baseURL}/verifyPassword?key=
+                  ${environment.firebase.apiKey}`;
+    const data = {
+      email: email,
+      password: password,
+      returnSecureToken: true
+    };
+    const httpOptions = {
+      headers: new HttpHeaders({'Content-Type':  'application/json'})
+    };
+
+    this.loaderService.setLoading(true); // Déclencher le loader
+
+    return this.http.post<User>(url, data, httpOptions).pipe(
+      switchMap((data: any) => {
+        const userId: string = data.localId;
+        const jwt: string = data.idToken;
+        return this.usersService.get(userId, jwt);
+      }),
+      tap(user => this.user.next(user)), // Mettre à jour l'état du service
+      catchError(error => this.errorService.handleError(error)), // Intercepterles erreurs éventuelles
+      finalize(() => this.loaderService.setLoading(false)) // Interompre le loader
+    );
+  }
+
+  // Déconnection
+  public logout(): void {
+    this.user.next(null);
+    this.router.navigate(['/login']);
   }
 
 }
