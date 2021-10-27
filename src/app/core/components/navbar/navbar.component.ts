@@ -13,10 +13,10 @@ import { User } from 'src/app/shared/models/user';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
 
-  homePath: string = 'home';
-  loginPath: string = 'login';
-  registerPath: string = 'register';
-  user: User|null;
+  public homePath: string = 'home';
+  public loginPath: string = 'login';
+  public registerPath: string = 'register';
+  public user: User|null;
   private subscription: Subscription;
 
   constructor(
@@ -43,7 +43,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.router.navigate([page]);
   }
 
-  toggleSidenav() {
+  public toggleSidenav() {
     this.layoutService.toggleSidenav();
   }
 
