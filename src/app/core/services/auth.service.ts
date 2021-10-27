@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { switchMap, tap, catchError, finalize, delay } from 'rxjs/operators';
 import { User } from 'src/app/shared/models/user';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -59,6 +59,7 @@ export class AuthService {
       }),
       // Pousser l'utilisateur qui vient de s'inscrire dans l'état du service.
       tap(user => this.user.next(user)),
+      tap(_ => this.logoutTimer(3600)),
       // Transmettre l'erreur rencontrée directement à la méthode handleError du service, qui elle s'occupera de prévenir les utilisateurs
       catchError(error => this.errorService.handleError(error)),
       finalize(() => this.loaderService.setLoading(false))
@@ -87,6 +88,7 @@ export class AuthService {
         return this.usersService.get(userId, jwt);
       }),
       tap(user => this.user.next(user)), // Mettre à jour l'état du service
+      tap(_ => this.logoutTimer(3600)),
       catchError(error => this.errorService.handleError(error)), // Intercepterles erreurs éventuelles
       finalize(() => this.loaderService.setLoading(false)) // Interompre le loader
     );
@@ -96,6 +98,13 @@ export class AuthService {
   public logout(): void {
     this.user.next(null);
     this.router.navigate(['/login']);
+  }
+
+  // Et on ajoute la méthode qui déclenche cette fameuse minuterie :
+  private logoutTimer(expirationTime: number): void {
+    of(true).pipe(
+      delay(expirationTime * 1000)
+    ).subscribe(_ => this.logout());
   }
 
 }
