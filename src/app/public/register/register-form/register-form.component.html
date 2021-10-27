@@ -13,10 +13,9 @@
             type="name"
             formControlName="name"
             class="form-control"
-            placeholder="Votre peusdonyme"
+            placeholder="Votre pseudonyme"
             autocorrect="off"
-            autocomplete="off"
-        />
+            autocomplete="off"/>
         <!-- On ajoute tous les messages d'erreurs potentiels : -->
         <small *ngIf="name && name.errors && name.dirty" class="form-text text-muted">
             <span [hidden]="!name.errors.required">
@@ -44,8 +43,7 @@
             class="form-control"
             placeholder="Votre email"
             autocorrect="off"
-            autocomplete="off"
-        />
+            autocomplete="off"/>
         <small *ngIf="email && email.errors && email.dirty" class="form-text text-muted">
             <span [hidden]="!email.errors.required">
                 Email requis.
