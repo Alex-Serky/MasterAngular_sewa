@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { switchMap, tap, catchError } from 'rxjs/operators';
 import { User } from 'src/app/shared/models/user';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { UsersService } from 'src/app/core/services/users.service';
+import { ErrorService } from 'src/app/core/services/error.service';
+
 
 
 @Injectable({
@@ -17,7 +19,8 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private usersService: UsersService) { }
+    private usersService: UsersService,
+    private errorService: ErrorService) { }
 
   public register(name: string, email: string, password: string): Observable<User|null> {
     const url =
@@ -34,7 +37,7 @@ export class AuthService {
       headers: new HttpHeaders({'Content-Type':  'application/json'})
     };
 
-    return this.http.post<User>(url, data, httpOptions).pipe(
+    return this.http.post(url, data, httpOptions).pipe(
       // On renvoit des données dans la variable data
       switchMap((data: any) => {
         // On extrait de cette première réponse un jeton JWT, et les informations de l'utilisateur
@@ -47,7 +50,10 @@ export class AuthService {
         // On sauvegarde les informations de connexion de l'utilisateur.
         return this.usersService.save(user, jwt);
       }),
-      tap(user => this.user.next(user)) // Pousser l'utilisateur qui vient de s'inscrire dans l'état du service.
+      // Pousser l'utilisateur qui vient de s'inscrire dans l'état du service.
+      tap(user => this.user.next(user)),
+      // Transmettre l'erreur rencontrée directement à la méthode handleError du service, qui elle s'occupera de prévenir les utilisateurs
+      catchError(error => this.errorService.handleError(error))
     );
   }
 

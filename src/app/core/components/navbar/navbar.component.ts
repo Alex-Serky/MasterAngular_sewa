@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/shared/models/user';
 
+
 @Component({
   selector: 'al-navbar',
   templateUrl: './navbar.component.html',
