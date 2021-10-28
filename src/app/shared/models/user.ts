@@ -19,7 +19,12 @@ export class User {
         this.pomodoroDuration = options.pomodoroDuration || 1500;
     }
 
+    // Cette méthode permet de vérifier le rôle de l'utilisateur
     get roles(): string[] {
         return this.email.endsWith('google.com') ? ['USER', 'EMPLOYEE'] : ['USER'];
+    }
+
+    hasRole(role: string): boolean {
+        return this.roles.includes(role);
     }
 }

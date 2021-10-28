@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { User } from '../../models/user';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'al-sidenav',
@@ -16,9 +19,18 @@ export class SidenavComponent implements OnInit {
   profilPath: string = `${this.prefix}/profil`;
   parametersPath: string = `${this.prefix}/parameters`;
 
-  constructor(private router: Router) { }
+  subscription: Subscription;
+  user: User|null;
 
-  ngOnInit(): void {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,) { }
+
+  ngOnInit(): void {
+    this.subscription = this.authService.user$.subscribe(user =>
+      this.user = user
+    );
+  }
 
   public navigate(page: string): void {
     this.router.navigate([page]);
@@ -26,6 +38,10 @@ export class SidenavComponent implements OnInit {
 
   public isActive(page: string): boolean {
     return this.router.isActive(page, true);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }
