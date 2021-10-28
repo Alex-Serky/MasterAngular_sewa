@@ -8,7 +8,7 @@ import { UsersService } from './users.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';
 import { Router } from '@angular/router';
-
+import { ToastrService } from './toastr.service';
 
 
 @Injectable({
@@ -24,7 +24,9 @@ export class AuthService {
     private usersService: UsersService,
     private errorService: ErrorService,
     private loaderService: LoaderService,
-    private router: Router) { }
+    private router: Router,
+    private toastrService: ToastrService) { }
+
 
   // Inscription
   public register(name: string, email: string, password: string): Observable<User|null> {
@@ -67,6 +69,7 @@ export class AuthService {
     );
   }
 
+
   // Connexion
   public login(email: string, password: string): Observable<User|null> {
     const url = `${environment.firebase.auth.baseURL}/verifyPassword?key=
@@ -97,7 +100,28 @@ export class AuthService {
     );
   }
 
-  // Déconnection
+
+  // Méthode permettant la modification de la durée de pomodoros et la MàJ de l'état
+  public updateUserState(user: User): Observable<User|null> {
+    this.loaderService.setLoading(true);
+
+    return this.usersService.update(user).pipe(
+      tap(user => this.user.next(user)),
+      tap(_ => this.toastrService.showToastr({
+        category: 'success',
+        message: 'Vos informations ont été mises à jour !'
+      })),
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
+  }
+
+  get currentUser(): User|null {
+    return this.user.getValue();
+  }
+
+
+  // Déconnexion
   public logout(): void {
     localStorage.removeItem('expirationDate');
     localStorage.removeItem('token');
