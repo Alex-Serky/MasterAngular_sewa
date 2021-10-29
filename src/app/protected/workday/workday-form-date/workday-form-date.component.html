@@ -3,8 +3,10 @@
         <div class="form-inline">
             <div class="form-group">
                 <label class="mr-3">Date:</label>
+                <!-- On intercepte désormais les nouvelles dates sélectionnées par l'utilisateur, et on les transmet à la méthode selectDate -->
                 <input
                     bsDatepicker
+                    (bsValueChange)="selectDate($event)"
                     [formControl]="dueDate"
                     [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY' }"
                     type="text"
