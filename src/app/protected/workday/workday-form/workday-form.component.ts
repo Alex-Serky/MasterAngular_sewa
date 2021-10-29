@@ -14,6 +14,7 @@ import { User } from 'src/app/shared/models/user';
 })
 export class WorkdayFormComponent implements OnInit {
 
+  workdayId: string | null; // Permet de faire la distinction entre l'ajout et l'édition
   workdayForm: FormGroup;
 
   constructor(
@@ -23,6 +24,7 @@ export class WorkdayFormComponent implements OnInit {
     private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.workdayId = '';
     this.workdayForm = this.createWorkdayForm();
 
   }
@@ -50,14 +52,29 @@ export class WorkdayFormComponent implements OnInit {
   submit(): void {
     const user: User|null = this.authService.currentUser;
 
-    if(user) {
-      const workday: Workday = new Workday({...{ userId: user.id }, ...this.workdayForm.value});
-      this.workdaysService.save(workday).subscribe(
+    if(!(user && user.id)) {
+      return;
+    }
+
+    // Update workday
+    if(this.workdayId) {
+      const workdayToUpdate: Workday = new Workday({...{userId: user.id }, ...{id: this.workdayId }, ...this.workdayForm.value});
+
+      this.workdaysService.update(workdayToUpdate).subscribe(
         _ => this.router.navigate(['/app/planning']),
         _ => this.workdayForm.reset()
       );
+      return;
     }
+
+    // Create workday
+    const workdayToCreate = new Workday({...{userId: user.id }, ...this.workdayForm.value});
+    this.workdaysService.save(workdayToCreate).subscribe(
+      _ => this.router.navigate(['/app/planning']),
+      _ => this.workdayForm.reset()
+    );
   }
+
 
   /**
    * Permet de vider le formulaire
@@ -81,6 +98,7 @@ export class WorkdayFormComponent implements OnInit {
         this.resetWorkdayForm(); // On réinitialise le formulaire d'une journée de travail.
         if(!workday) return; // Si cette journée de travail n'existe pas sur le Firestore, alors on s'arrête là.
 
+        this.workdayId = workday.id; // On récupère l'identifiant du workday
         this.notes.setValue(workday.notes); // Attribuer une nouvelle valeur au champ notes
         workday.tasks.forEach(task => {
         const taskField: FormGroup = this.fb.group({
