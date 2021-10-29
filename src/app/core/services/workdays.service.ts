@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; // On importe le client Http d'Angular.
-import { Workday } from 'src/app/shared/models/workday'; // On importe notre modèle métier Workday.
 import { environment } from 'src/environments/environment';
+import { Workday } from 'src/app/shared/models/workday'; // On importe notre modèle métier Workday.
+import { Task } from 'src/app/shared/models/task';
 import { ToastrService } from './toastr.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';

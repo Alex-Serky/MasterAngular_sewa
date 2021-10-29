@@ -25,4 +25,9 @@ export class WorkdayFormTasksItemComponent implements OnInit {
     this.removedTask.emit(index);
   }
 
+  // Prendre un nombre de pomodoros en paramètre et mettre à jour cette information
+  selectTodo(todo: number) {
+    this.task.patchValue({todo: todo});
+  }
+
 }
