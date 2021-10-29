@@ -59,4 +59,39 @@ export class WorkdayFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Permet de vider le formulaire
+   */
+  resetWorkdayForm() {
+    while(this.tasks.length !== 0) {
+      this.tasks.removeAt(0);
+    }
+    this.notes.reset(); // Vider le champ notes
+  }
+
+  /**
+   * Permet de traiter le cas où l'utilisateur sélectionne une nouvelle journée de travail.
+   * @param displayDate
+   */
+  onDateSelected(displayDate: string) {
+    const user: User|null = this.authService.currentUser; // On va récupérer la journée de travail par date pour l'utilisateur courant seulement.
+
+    if(user && user.id) {
+      this.workdaysService.getWorkdayByDate(displayDate, user.id).subscribe(workday => {
+        this.resetWorkdayForm(); // On réinitialise le formulaire d'une journée de travail.
+        if(!workday) return; // Si cette journée de travail n'existe pas sur le Firestore, alors on s'arrête là.
+
+        this.notes.setValue(workday.notes); // Attribuer une nouvelle valeur au champ notes
+        workday.tasks.forEach(task => {
+        const taskField: FormGroup = this.fb.group({
+          title: task.title,
+          todo: task.todo,
+          done: task.done
+        });
+        this.tasks.push(taskField);
+        });
+      });
+    }
+  }
+
 }

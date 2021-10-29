@@ -12,6 +12,7 @@ import { DateService } from 'src/app/core/services/date.service';
 export class WorkdayFormDateComponent implements OnInit {
 
   @Input() dueDate: FormControl;
+  @Output() dateSelected = new EventEmitter<string>();
 
   constructor(
     private localeService: BsLocaleService,

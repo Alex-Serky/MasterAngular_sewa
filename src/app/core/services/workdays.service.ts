@@ -101,7 +101,7 @@ export class WorkdaysService {
   }
 
   /**
-   * 
+   *
    */
   private getTaskForFirestore(task: Task): any {
     return {
