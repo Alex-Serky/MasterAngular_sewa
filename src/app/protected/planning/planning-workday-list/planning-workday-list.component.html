@@ -1,10 +1,9 @@
-<div class="row">
+<div *ngIf="workdays" class="row">
+    <!-- Passer au template les journées de travail -->
     <al-planning-workday-item
         *ngFor="let workday of workdays$ | async"
-        [dueDate]="workday.dueDate"
-        [doneTasks]="workday.doneTasks"
-        [remainingTasks]="workday.remainingTasks"
-        (workdayRemoved)="onWorkdayRemoved($event)"
-        class="col-md-4">
+        [workday]="workday"
+        (workdayRemoved)="onWorkdayRemoved(workday)"
+        class="col-md-4 d-flex">
     </al-planning-workday-item>
 </div>

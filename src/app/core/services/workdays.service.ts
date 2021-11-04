@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; // On importe le client Http d'Angular.
+import { Observable, of } from 'rxjs';
+import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Workday } from 'src/app/shared/models/workday'; // On importe notre modèle métier Workday.
 import { Task } from 'src/app/shared/models/task';
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // On importe le client Http d'Angular.
+import { DateService } from './date.service';
 import { ToastrService } from './toastr.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';
-import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-import { DateService } from './date.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class WorkdaysService {
    * @param workday
    * @returns
    */
-  save(workday: Workday) {
+  public save(workday: Workday) {
 
     // Pousser la journée de travail passé en paramètre au Firestore.
     const url = `${environment.firebase.firestore.baseURL}/workdays?key=${environment.firebase.apiKey}`;
@@ -213,6 +213,64 @@ export class WorkdaysService {
       dueDate: fields.dueDate.integerValue,
       tasks: tasks
     });
+  }
+
+  /**
+   * Requête de type POST
+   */
+  getWorkdayByUser(userId: string): any {
+    const url = `${environment.firebase.firestore.baseURL}:runQuery?key=${environment.firebase.apiKey}`;
+    const data = this.getWorkdayByUserQuery(userId);
+    const jwt: string = localStorage.getItem('token')!;
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${jwt}`
+      })
+    };
+
+    return this.http.post(url, data, httpOptions).pipe(
+      switchMap((workdaysData: any) => {
+        const workdays: Workday[] = [];
+        workdaysData.forEach((data: any) => {
+          if (data && data.document) {
+          const workday: Workday = this.getWorkdayFromFirestore(data.document.name, data.document.fields);
+          workdays.push(workday);
+          }
+        })
+        return of(workdays);
+      }),
+      catchError(error => this.errorService.handleError(error))
+    );
+  }
+
+  /**
+   *
+   * @param userId
+   * @returns
+   */
+  private getWorkdayByUserQuery(userId: string): any {
+    return {
+      'structuredQuery': {
+        'from': [{
+          'collectionId': 'workdays'
+        }],
+        'where': {
+          'fieldFilter': {
+            'field': { 'fieldPath': 'userId' },
+            'op': 'EQUAL',
+            'value': { 'stringValue': userId }
+          }
+        },
+        "orderBy": [{
+          "field": {
+            "fieldPath": "dueDate"
+          },
+          "direction": "DESCENDING"
+        }]
+      }
+    };
   }
 
   /**
