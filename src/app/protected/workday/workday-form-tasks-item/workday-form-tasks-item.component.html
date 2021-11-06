@@ -31,10 +31,11 @@
                     </a>
                 </li>
             </ul>
-            <i
-                *ngIf="isLast && !isFirst"
+            <i *ngIf="isLast && !isFirst"
                 (click)="removeTask(index)"
-                class="material-icons md-18 md-grey">clear</i>
+                class="material-icons md-18 md-grey">
+                clear
+            </i>
         </div>
 
     </div>

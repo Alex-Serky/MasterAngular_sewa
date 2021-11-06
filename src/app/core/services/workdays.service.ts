@@ -307,7 +307,6 @@ export class WorkdaysService {
     const jwt: string = localStorage.getItem('token')!;
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json',
         'Authorization': `Bearer ${jwt}`
       })
     };

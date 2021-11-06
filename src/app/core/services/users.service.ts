@@ -42,7 +42,6 @@ export class UsersService {
     const data = this.getStructuredQuery(userId);
     const httpOptions = {
       headers: new HttpHeaders({
-      'Content-Type':  'application/json',
       'Authorization': `Bearer ${jwt}`
       })
     };

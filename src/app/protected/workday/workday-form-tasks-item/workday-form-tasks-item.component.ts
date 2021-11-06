@@ -17,10 +17,12 @@ export class WorkdayFormTasksItemComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  // L'utilisateur demande à supprimer une tâche
+  /**
+   * L'utilisateur demande à supprimer une tâche
+   * @param index
+   */
   removeTask(index: number) {
     this.removedTask.emit(index);
   }

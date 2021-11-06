@@ -2,7 +2,6 @@
     <al-workday-form-date
         (dateSelected)="onDateSelected($event)"
         [dueDate]="dueDate"></al-workday-form-date>
-    <al-workday-form-date [dueDate]="dueDate"></al-workday-form-date>
     <!-- Ajouter les deux liaisons de propriétés workdayForm et tasks : -->
     <al-workday-form-tasks [workdayForm]="workdayForm" [tasks]="tasks">
     </al-workday-form-tasks>
@@ -10,10 +9,10 @@
 
     <div class="text-right">
         <button
-        (click)="submit()"
-        type="submit"
-        class="btn btn-success btn-lg"
-        [disabled]="workdayForm.invalid">
+            (click)="submit()"
+            type="submit"
+            class="btn btn-success btn-lg"
+            [disabled]="workdayForm.invalid">
             Sauvegarder
         </button>
     </div>

@@ -26,11 +26,12 @@ export class PlanningWorkdayListComponent implements OnInit {
     }
   }
 
+  /**
+   * Permet de mettre à jour les journées de travail à afficher, en retirant la journée de travail qui a été supprimée côté Firestore grâce à filter (JS).
+   */
   onWorkdayRemoved(workday: Workday) {
     this.workdayService.remove(workday)
-    .subscribe(_ => {
-      console.log(`${workday.id} has been removed from Firestore !`);
-    })
+      .subscribe(_ => this.workdays = this.workdays.filter(el => el.id !== workday.id))
   }
 
 }

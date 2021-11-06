@@ -40,13 +40,9 @@ export class AuthService {
       returnSecureToken: true
     };
 
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type':  'application/json'})
-    };
-
     this.loaderService.setLoading(true);
 
-    return this.http.post(url, data, httpOptions).pipe(
+    return this.http.post(url, data, {}).pipe(
       // On renvoit des données dans la variable data
       switchMap((data: any) => {
         // On extrait de cette première réponse un jeton JWT, et les informations de l'utilisateur
