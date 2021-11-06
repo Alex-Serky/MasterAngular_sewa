@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { WorkdaysService } from 'src/app/core/services/workdays.service';
 import { User } from 'src/app/shared/models/user';
 import { Workday } from 'src/app/shared/models/workday';
-
 
 @Component({
   selector: 'al-planning-workday-list',
@@ -15,7 +13,6 @@ import { Workday } from 'src/app/shared/models/workday';
 export class PlanningWorkdayListComponent implements OnInit {
 
   workdays: Workday[];
-  workdays$: Observable<Workday[]>
 
   constructor(
     private authService: AuthService,

@@ -246,7 +246,7 @@ export class WorkdaysService {
   }
 
   /**
-   *
+   * Cette méthode permet de définir les critères de sélection de mes journées de travail auprès du Firestore.
    * @param userId
    * @returns
    */
