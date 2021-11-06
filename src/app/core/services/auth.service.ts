@@ -27,8 +27,13 @@ export class AuthService {
     private router: Router,
     private toastrService: ToastrService) { }
 
-
-  // Inscription
+  /**
+   * Inscription des utilisateurs
+   * @param name
+   * @param email
+   * @param password
+   * @returns
+   */
   public register(name: string, email: string, password: string): Observable<User|null> {
     const url =
     `${environment.firebase.auth.baseURL}/signupNewUser?key=
@@ -39,7 +44,6 @@ export class AuthService {
       password: password,
       returnSecureToken: true
     };
-
     this.loaderService.setLoading(true);
 
     return this.http.post(url, data, {}).pipe(
@@ -54,7 +58,7 @@ export class AuthService {
         });
         // On sauvegarde les informations de connexion de l'utilisateur.
         this.saveAuthData(data.localId, jwt);
-        return this.usersService.save(user, jwt);
+        return this.usersService.save(user);
       }),
       // Pousser l'utilisateur qui vient de s'inscrire dans l'état du service.
       tap(user => this.user.next(user)),
@@ -65,8 +69,9 @@ export class AuthService {
     );
   }
 
-
-  // Connexion
+  /**
+   * COnnexion des utilisateurs
+   */
   public login(email: string, password: string): Observable<User|null> {
     const url = `${environment.firebase.auth.baseURL}/verifyPassword?key=
                   ${environment.firebase.apiKey}`;
@@ -75,19 +80,16 @@ export class AuthService {
       password: password,
       returnSecureToken: true
     };
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type':  'application/json'})
-    };
 
     this.loaderService.setLoading(true); // Déclencher le loader
 
-    return this.http.post<User>(url, data, httpOptions).pipe(
+    return this.http.post<User>(url, data, {}).pipe(
       switchMap((data: any) => {
         const userId: string = data.localId;
         const jwt: string = data.idToken;
         // On sauvegarde les informations de connexion de l'utilisateur.
         this.saveAuthData(data.localId, jwt);
-        return this.usersService.get(userId, jwt);
+        return this.usersService.get(userId);
       }),
       tap(user => this.user.next(user)), // Mettre à jour l'état du service
       tap(_ => this.logoutTimer(3600)),
@@ -95,7 +97,6 @@ export class AuthService {
       finalize(() => this.loaderService.setLoading(false)) // Interompre le loader
     );
   }
-
 
   // Méthode permettant la modification de la durée de pomodoros et la MàJ de l'état
   public updateUserState(user: User): Observable<User|null> {

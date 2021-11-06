@@ -12,6 +12,9 @@ export class AuthInterceptor implements HttpInterceptor {
      * @returns
      */
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        if (!this.isPublicRequest(request.url)) {
+            request = this.addToken(request, localStorage.getItem('token')!);
+        }
         // On utilise notre nouvelle méthode 'addContentType'.
         request = this.addContentType(request);
 
@@ -30,5 +33,23 @@ export class AuthInterceptor implements HttpInterceptor {
                 'Content-Type': 'application/json'
             }
         });
+    }
+
+    /**
+     * Permet d'ajouter un jeton d'autorisation à une requête, et de la retourner.
+     * @param request
+     * @param token
+     * @returns
+     */
+    private addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
+        return request.clone({
+            setHeaders: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    }
+
+    private isPublicRequest(url: string): boolean {
+        return (url.includes('verifyPassword') || url.includes('signupNewUser'));
     }
 }
