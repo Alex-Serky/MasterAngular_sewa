@@ -4,6 +4,8 @@ import { interval, Observable, Subject, of } from 'rxjs';
 import { map, takeUntil, delay, takeWhile } from 'rxjs/operators';
 import { Task } from 'src/app/shared/models/task';
 import { WorkdaysService } from 'src/app/core/services/workdays.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { User } from 'src/app/shared/models/user';
 
 @Component({
   selector: 'al-dashboard-workday',
@@ -23,7 +25,10 @@ export class DashboardWorkdayComponent implements OnInit {
   pomodoro$: Observable<number>;
   currentTask: Task|undefined;
 
-  constructor(private workdaysService: WorkdaysService) { }
+  constructor(
+    private workdaysService: WorkdaysService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.isWorkdayComplete = (this.getCurrentTask() === undefined);
@@ -32,7 +37,11 @@ export class DashboardWorkdayComponent implements OnInit {
     this.cancelPomodoro$ = new Subject();
     this.completePomodoro$ = new Subject();
     this.currentProgress = 0
-    this.maxProgress = 5;
+    const user: User|null = this.authService.currentUser;
+    if(user) {
+      // Chaque employé peut personnaliser la durée de son pomodoro.
+      this.maxProgress = user.pomodoroDuration;
+    }
     this.pomodoro$ = interval(1000).pipe(
       // On se désabonne du flux d'un pomodoro au bon moment (takeUntil())
       takeUntil(this.cancelPomodoro$),
