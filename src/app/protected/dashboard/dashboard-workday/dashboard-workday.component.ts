@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Workday } from 'src/app/shared/models/workday';
 import { interval, Observable, Subject, of } from 'rxjs';
 import { map, takeUntil, delay, takeWhile } from 'rxjs/operators';
+import { Task } from 'src/app/shared/models/task';
 
 @Component({
   selector: 'al-dashboard-workday',
@@ -18,6 +19,7 @@ export class DashboardWorkdayComponent implements OnInit {
   currentProgress: number;
   maxProgress: number;
   pomodoro$: Observable<number>;
+  currentTask: Task|undefined;
 
   constructor() { }
 
@@ -57,8 +59,20 @@ export class DashboardWorkdayComponent implements OnInit {
   }
 
   completePomodoro() {
-    this.isPomodoroActive = false;
     this.completePomodoro$.next('complete');
+    this.isPomodoroActive = false;
+
+    // On récupére la tâche courante.
+    this.currentTask = this.getCurrentTask();
+
+    // On incrémente la tâche courante.
+    if(this.currentTask) {
+      this.currentTask.done++;
+    }
+  }
+
+  getCurrentTask(): Task|undefined {
+    return this.workday.tasks.find(task => task.todo > task.done)
   }
 
 }
