@@ -2,12 +2,11 @@
     <div class="card">
         <div class="card-body">
             <progressbar
-                [max]="1500"
-                [value]="750"
+                [value]="percentage"
                 type="success"
                 [striped]="true"
                 [animate]="true">
-                <i>50%</i>
+                <i>{{percentage}}%</i>
             </progressbar>
         </div>
     </div>
