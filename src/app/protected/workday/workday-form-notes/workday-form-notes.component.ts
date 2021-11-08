@@ -11,7 +11,7 @@ export class WorkdayFormNotesComponent implements OnInit {
 
   @Input() notes: FormControl;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
   }

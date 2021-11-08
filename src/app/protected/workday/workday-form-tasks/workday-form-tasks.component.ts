@@ -38,7 +38,9 @@ export class WorkdayFormTasksComponent implements OnInit {
     return taskForm;
   }
 
-  // Méthode qui permet d'instancier un nouveau FormGroup contenant simplement un titre de tâche vide
+  /**
+   * Méthode qui permet d'instancier un nouveau FormGroup contenant simplement un titre de tâche vide
+   */
   onAddedTask() {
     const task: FormGroup = this.createTaskForm();
     this.tasks.push(task);

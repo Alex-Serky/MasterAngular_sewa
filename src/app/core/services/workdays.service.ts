@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http'; // On importe le client Http d'Angular.
 import { Workday } from 'src/app/shared/models/workday'; // On importe notre modèle métier Workday.
+import { environment } from 'src/environments/environment';
 import { Task } from 'src/app/shared/models/task';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; // On importe le client Http d'Angular.
-import { DateService } from './date.service';
 import { ToastrService } from './toastr.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';
+import { Observable, of } from 'rxjs';
+import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
+import { DateService } from './date.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class WorkdaysService {
    * @param workday
    * @returns
    */
-  public save(workday: Workday) {
+  save(workday: Workday) {
 
     // Pousser la journée de travail passé en paramètre au Firestore.
     const url = `${environment.firebase.firestore.baseURL}/workdays?key=${environment.firebase.apiKey}`;
@@ -42,6 +42,47 @@ export class WorkdaysService {
       })),
       catchError(error => this.errorService.handleError(error)),
       finalize(() => this.loaderService.setLoading(false))
+    );
+  }
+
+  /**
+   * Permet de pousser la modification effectuée sur une journée de travail vers le Firestore.
+   * @param workday
+   * @returns
+   */
+  update(workday: Workday) {
+    const url = `${environment.firebase.firestore.baseURL}/workdays/${workday.id}?key=${environment.firebase.apiKey}&currentDocument.exists=true`;
+    const data = this.getWorkdayForFirestore(workday);
+
+    return this.http.patch(url, data, {}).pipe(
+      tap(_ => this.toastrService.showToastr({
+        category: 'success',
+        message: 'Votre journée de travail a été sauvegardée avec succès.'
+      })),
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
+  }
+
+  /**
+   * Requête de type POST
+   */
+  getWorkdayByUser(userId: string): any {
+    const url = `${environment.firebase.firestore.baseURL}:runQuery?key=${environment.firebase.apiKey}`;
+    const data = this.getWorkdayByUserQuery(userId);
+
+    return this.http.post(url, data, {}).pipe(
+      switchMap((workdaysData: any) => {
+        const workdays: Workday[] = [];
+        workdaysData.forEach((data: any) => {
+          if (data && data.document) {
+          const workday: Workday = this.getWorkdayFromFirestore(data.document.name, data.document.fields);
+          workdays.push(workday);
+          }
+        })
+        return of(workdays);
+      }),
+      catchError(error => this.errorService.handleError(error))
     );
   }
 
@@ -124,6 +165,10 @@ export class WorkdaysService {
         if(!document) {
           return of(null);
         }
+
+        console.log('getWorkdayByDate');
+        console.log(this.getWorkdayFromFirestore(document.name, document.fields));
+
         return of(this.getWorkdayFromFirestore(document.name, document.fields));
       })
     );
@@ -200,28 +245,6 @@ export class WorkdaysService {
   }
 
   /**
-   * Requête de type POST
-   */
-  getWorkdayByUser(userId: string): any {
-    const url = `${environment.firebase.firestore.baseURL}:runQuery?key=${environment.firebase.apiKey}`;
-    const data = this.getWorkdayByUserQuery(userId);
-
-    return this.http.post(url, data, {}).pipe(
-      switchMap((workdaysData: any) => {
-        const workdays: Workday[] = [];
-        workdaysData.forEach((data: any) => {
-          if (data && data.document) {
-          const workday: Workday = this.getWorkdayFromFirestore(data.document.name, data.document.fields);
-          workdays.push(workday);
-          }
-        })
-        return of(workdays);
-      }),
-      catchError(error => this.errorService.handleError(error))
-    );
-  }
-
-  /**
    * Cette méthode permet de définir les critères de sélection de mes journées de travail auprès du Firestore.
    * @param userId
    * @returns
@@ -247,25 +270,6 @@ export class WorkdaysService {
         }]
       }
     };
-  }
-
-  /**
-   * Permet de pousser la modification effectuée sur une journée de travail vers le Firestore.
-   * @param workday
-   * @returns
-   */
-  update(workday: Workday) {
-    const url = `${environment.firebase.firestore.baseURL}/workdays/${workday.id}?key=${environment.firebase.apiKey}&currentDocument.exists=true`;
-    const data = this.getWorkdayForFirestore(workday);
-
-    return this.http.patch(url, data, {}).pipe(
-      tap(_ => this.toastrService.showToastr({
-        category: 'success',
-        message: 'Votre journée de travail a été sauvegardée avec succès.'
-      })),
-      catchError(error => this.errorService.handleError(error)),
-      finalize(() => this.loaderService.setLoading(false))
-    );
   }
 
   /**

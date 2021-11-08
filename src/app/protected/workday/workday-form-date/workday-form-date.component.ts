@@ -25,7 +25,7 @@ export class WorkdayFormDateComponent implements OnInit {
   // Son rôle est d'intercepter les dates via bsValueChange
   selectDate(date: Date): void {
     if(date) {
-      // Transformer en sa date d'affichage grâce à la méthode getDisplayDate
+      // Transformer la date d'affichage grâce à la méthode getDisplayDate
       const displayDate: string = this.dateService.getDisplayDate(date);
       this.dateSelected.emit(displayDate);
     }
