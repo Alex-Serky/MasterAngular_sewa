@@ -1,7 +1,11 @@
 <!-- Ce template contient tous les éléments nécessaires
 pour afficher une journée de travail à l'utilisateur.-->
 
-<al-dashboard-pomodoro-progress></al-dashboard-pomodoro-progress>
+<al-dashboard-pomodoro-progress
+    *ngIf="isPomodoroActive"
+    [progress]="currentProgress"
+    [maxProgress]="maxProgress">
+</al-dashboard-pomodoro-progress>
 
 <!-- Ajouter un premier bouton de commande... -->
 <div *ngIf="!isPomodoroActive" class="text-center my-3">
