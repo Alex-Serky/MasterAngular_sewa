@@ -22,7 +22,9 @@ export class WorkdayFormDateComponent implements OnInit {
     this.localeService.use('fr');
   }
 
-  // Son rôle est d'intercepter les dates via bsValueChange
+  /**
+   * Permet d'intercepter les dates via bsValueChange
+   */
   selectDate(date: Date): void {
     if(date) {
       // Transformer la date d'affichage grâce à la méthode getDisplayDate

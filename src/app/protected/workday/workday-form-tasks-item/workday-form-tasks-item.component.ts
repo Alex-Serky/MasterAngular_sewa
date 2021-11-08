@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'al-workday-form-tasks-item',
@@ -15,9 +15,13 @@ export class WorkdayFormTasksItemComponent implements OnInit {
 
   @Output() removedTask = new EventEmitter<number>();
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {}
+
+  get todo() {
+    return this.task.get('todo') as FormControl;
+  }
 
   /**
    * L'utilisateur demande à supprimer une tâche

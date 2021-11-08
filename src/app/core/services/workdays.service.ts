@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; // On importe le client Http d'Angular.
-import { Workday } from 'src/app/shared/models/workday'; // On importe notre modèle métier Workday.
+import { HttpClient } from '@angular/common/http';
+import { Workday } from 'src/app/shared/models/workday';
 import { environment } from 'src/environments/environment';
 import { Task } from 'src/app/shared/models/task';
 import { ToastrService } from './toastr.service';
@@ -31,10 +31,10 @@ export class WorkdaysService {
 
     // Pousser la journée de travail passé en paramètre au Firestore.
     const url = `${environment.firebase.firestore.baseURL}/workdays?key=${environment.firebase.apiKey}`;
-
     const data = this.getWorkdayForFirestore(workday); // C'est cette ligne qui est un peu plus costaud que d'habitude...
 
     this.loaderService.setLoading(true);
+
     return this.http.post(url, data, {}).pipe(
       tap(_ => this.toastrService.showToastr({
         category: 'success',
@@ -76,8 +76,8 @@ export class WorkdaysService {
         const workdays: Workday[] = [];
         workdaysData.forEach((data: any) => {
           if (data && data.document) {
-          const workday: Workday = this.getWorkdayFromFirestore(data.document.name, data.document.fields);
-          workdays.push(workday);
+            const workday: Workday = this.getWorkdayFromFirestore(data.document.name, data.document.fields);
+            workdays.push(workday);
           }
         })
         return of(workdays);
@@ -87,66 +87,19 @@ export class WorkdaysService {
   }
 
   /**
-   * Pousser le modèle métier d'une journée de travail au Firestore.
-   * @param workday
-   * @returns
+   * Permet de supprimer la journée de travail sur le Firestore.
    */
-  private getWorkdayForFirestore(workday: Workday): any {
-    let dueDate: number; // Timestamp traditionnelle en secondes.
-    let dueDateMs: number; // Timestamp JavaScript en millisecondes.
+  remove(workday: Workday) {
+    const url = `${environment.firebase.firestore.baseURL}/workdays/${workday.id}?key=${environment.firebase.apiKey}`;
 
-    if(typeof workday.dueDate == 'string') {
-      dueDate = +workday.dueDate;
-      dueDateMs = dueDate * 1000;
-    } else {
-      dueDate = new Date(workday.dueDate).getTime() / 1000;
-      dueDateMs = dueDate * 1000;
-    }
-
-    // La nouvelle propriété displayDate est prise en compte.
-    const displayDate: string = this.dateService.getDisplayDate(new Date(dueDateMs)); // La nouvelle propriété displayDate est prise en compte.
-    const tasks: Object = this.getTaskListForFirestore(workday.tasks);
-
-    return {
-      fields: {
-        dueDate: { integerValue: dueDate },
-        displayDate: { stringValue: displayDate },
-        tasks: tasks,
-        notes: { stringValue: workday.notes },
-        userId: { stringValue: workday.userId }
-      }
-    };
-  }
-
-  /**
-   * Mise en place de la liste des tâches d'une journée de travail, pour le Firestore.
-   */
-  private getTaskListForFirestore(tasks: Task[]): any {
-    const taskList: any = {
-      arrayValue: {
-      values: []
-      }
-    };
-
-    tasks.forEach(task => taskList.arrayValue.values.push(this.getTaskForFirestore(task)));
-
-    return taskList;
-  }
-
-  /**
-   *
-   */
-  private getTaskForFirestore(task: Task): any {
-    return {
-      mapValue: {
-        fields: {
-          title: { stringValue: task.title },
-          todo: { integerValue: task.todo },
-          done: { integerValue: task.done },
-          completed: { booleanValue: false }
-        }
-      }
-    }
+    return this.http.delete(url, {}).pipe(
+      tap(_ => this.toastrService.showToastr({
+        category: 'success',
+        message: 'Votre journée de travail a été supprimé avec succès.'
+      })),
+      catchError(error => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
   }
 
   /**
@@ -166,14 +119,41 @@ export class WorkdaysService {
           return of(null);
         }
 
-        console.log('getWorkdayByDate');
-        console.log(this.getWorkdayFromFirestore(document.name, document.fields));
+        // console.log('getWorkdayByDate');
+        // console.log(this.getWorkdayFromFirestore(document.name, document.fields));
 
         return of(this.getWorkdayFromFirestore(document.name, document.fields));
       })
     );
   }
 
+  /**
+   * Cette méthode permet de définir les critères de sélection de mes journées de travail auprès du Firestore.
+   * @param userId
+   * @returns
+   */
+  private getWorkdayByUserQuery(userId: string): any {
+    return {
+      'structuredQuery': {
+        'from': [{
+          'collectionId': 'workdays'
+        }],
+        'where': {
+          'fieldFilter': {
+            'field': { 'fieldPath': 'userId' },
+            'op': 'EQUAL',
+            'value': { 'stringValue': userId }
+          }
+        },
+        "orderBy": [{
+          "field": {
+            "fieldPath": "dueDate"
+          },
+          "direction": "DESCENDING"
+        }]
+      }
+    };
+  }
 
   /**
    * Méthode qui permet de fournir les informations nécessaires à notre requête pour le Firestore.
@@ -245,47 +225,66 @@ export class WorkdaysService {
   }
 
   /**
-   * Cette méthode permet de définir les critères de sélection de mes journées de travail auprès du Firestore.
-   * @param userId
+   * Pousser le modèle métier d'une journée de travail au Firestore.
+   * @param workday
    * @returns
    */
-  private getWorkdayByUserQuery(userId: string): any {
+  private getWorkdayForFirestore(workday: Workday): any {
+    let dueDate: number; // Timestamp traditionnelle en secondes.
+    let dueDateMs: number; // Timestamp JavaScript en millisecondes.
+
+    if(typeof workday.dueDate == 'string') {
+      dueDate = +workday.dueDate;
+      dueDateMs = dueDate * 1000;
+    } else {
+      dueDate = new Date(workday.dueDate).getTime() / 1000;
+      dueDateMs = dueDate * 1000;
+    }
+
+    // La nouvelle propriété displayDate est prise en compte.
+    const displayDate: string = this.dateService.getDisplayDate(new Date(dueDateMs));
+    const tasks: Object = this.getTaskListForFirestore(workday.tasks);
+
     return {
-      'structuredQuery': {
-        'from': [{
-          'collectionId': 'workdays'
-        }],
-        'where': {
-          'fieldFilter': {
-            'field': { 'fieldPath': 'userId' },
-            'op': 'EQUAL',
-            'value': { 'stringValue': userId }
-          }
-        },
-        "orderBy": [{
-          "field": {
-            "fieldPath": "dueDate"
-          },
-          "direction": "DESCENDING"
-        }]
+      fields: {
+        dueDate: { integerValue: Math.trunc(dueDate) },
+        displayDate: { stringValue: displayDate },
+        tasks: tasks,
+        notes: { stringValue: workday.notes },
+        userId: { stringValue: workday.userId }
       }
     };
   }
 
   /**
-   * Permet de supprimer la journée de travail sur le Firestore.
+   * Mise en place de la liste des tâches d'une journée de travail, pour le Firestore.
    */
-  remove(workday: Workday) {
-    const url = `${environment.firebase.firestore.baseURL}/workdays/${workday.id}?key=${environment.firebase.apiKey}`;
+  private getTaskListForFirestore(tasks: Task[]): any {
+    const taskList: any = {
+      arrayValue: {
+      values: []
+      }
+    };
 
-    return this.http.delete(url, {}).pipe(
-      tap(_ => this.toastrService.showToastr({
-        category: 'success',
-        message: 'Votre journée de travail a été supprimé avec succès.'
-      })),
-      catchError(error => this.errorService.handleError(error)),
-      finalize(() => this.loaderService.setLoading(false))
-    );
+    tasks.forEach(task => taskList.arrayValue.values.push(this.getTaskForFirestore(task)));
+
+    return taskList;
+  }
+
+  /**
+   *
+   */
+  private getTaskForFirestore(task: Task): any {
+    return {
+      mapValue: {
+        fields: {
+          title: { stringValue: task.title },
+          todo: { integerValue: task.todo },
+          done: { integerValue: task.done },
+          completed: { booleanValue: false }
+        }
+      }
+    }
   }
 
 }

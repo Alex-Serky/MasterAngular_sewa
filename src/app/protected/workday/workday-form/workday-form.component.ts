@@ -89,12 +89,12 @@ export class WorkdayFormComponent implements OnInit {
 
         this.notes.setValue(workday.notes); // Attribuer une nouvelle valeur au champ notes
         workday.tasks.forEach(task => {
-        const taskField: FormGroup = this.fb.group({
-          title: task.title,
-          todo: task.todo,
-          done: task.done
-        });
-        this.tasks.push(taskField);
+          const taskField: FormGroup = this.fb.group({
+            title: task.title,
+            todo: task.todo,
+            done: task.done
+          });
+          this.tasks.push(taskField);
         });
       });
     }
