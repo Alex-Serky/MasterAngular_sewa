@@ -1,33 +1,42 @@
 <!-- Ce template contient tous les éléments nécessaires
 pour afficher une journée de travail à l'utilisateur.-->
 
-<al-dashboard-pomodoro-progress
-    *ngIf="isPomodoroActive"
-    [progress]="currentProgress"
-    [maxProgress]="maxProgress">
-</al-dashboard-pomodoro-progress>
+<div *ngIf="!isWorkdayComplete">
 
-<!-- Ajouter un premier bouton de commande... -->
-<div *ngIf="!isPomodoroActive" class="text-center my-3">
-    <button (click)="startPomodoro()" class="btn btn-success btn-sm">
-        Démarrer le Pomodoro
-    </button>
+    <al-dashboard-pomodoro-progress
+        *ngIf="isPomodoroActive"
+        [progress]="currentProgress"
+        [maxProgress]="maxProgress">
+    </al-dashboard-pomodoro-progress>
+
+    <!-- Ajouter un premier bouton de commande... -->
+    <div *ngIf="!isPomodoroActive" class="text-center my-3">
+        <button (click)="startPomodoro()" class="btn btn-success btn-sm">
+            Démarrer le Pomodoro
+        </button>
+    </div>
+
+    <!-- ... ainsi que les boutons des commandes suivants: -->
+    <div *ngIf="isPomodoroActive" class="text-center my-3">
+        <button (click)="cancelPomodoro()" class="btn btn-sm mr-1">
+            Annuler le Pomodoro
+        </button>
+        <button (click)="completePomodoro()" class="btn btn-success btn-sm">
+            Terminé le Pomodoro
+        </button>
+    </div>
+
+    <!-- Et enfin afficher la liste des tâches ! -->
+    <div>
+        <al-dashboard-task-item
+            *ngFor="let task of workday.tasks"
+            [task]="task">
+        </al-dashboard-task-item>
+    </div>
+
 </div>
 
-<!-- ... ainsi que les boutons des commandes suivants: -->
-<div *ngIf="isPomodoroActive" class="text-center my-3">
-    <button (click)="cancelPomodoro()" class="btn btn-sm mr-1">
-        Annuler le Pomodoro
-    </button>
-    <button (click)="completePomodoro()" class="btn btn-success btn-sm">
-        Terminé le Pomodoro
-    </button>
-</div>
-
-<!-- Et enfin afficher la liste des tâches ! -->
-<div>
-    <al-dashboard-task-item
-        *ngFor="let task of workday.tasks"
-        [task]="task">
-    </al-dashboard-task-item>
+<div *ngIf="isWorkdayComplete" class="text-center mt-5">
+    <p *ngFor="let task of workday.tasks"><s>{{ task.title }}</s></p>
+    <p class="display-4">Félicitations pour le travail accompli ! 🥳 🎉 👍</p>
 </div>

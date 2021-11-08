@@ -3,6 +3,7 @@ import { Workday } from 'src/app/shared/models/workday';
 import { interval, Observable, Subject, of } from 'rxjs';
 import { map, takeUntil, delay, takeWhile } from 'rxjs/operators';
 import { Task } from 'src/app/shared/models/task';
+import { WorkdaysService } from 'src/app/core/services/workdays.service';
 
 @Component({
   selector: 'al-dashboard-workday',
@@ -12,6 +13,7 @@ import { Task } from 'src/app/shared/models/task';
 export class DashboardWorkdayComponent implements OnInit {
 
   @Input() workday: Workday;
+  isWorkdayComplete: boolean;
   isPomodoroActive: boolean;
   startPomodoro$: Subject<string>;
   cancelPomodoro$: Subject<string>;
@@ -21,9 +23,10 @@ export class DashboardWorkdayComponent implements OnInit {
   pomodoro$: Observable<number>;
   currentTask: Task|undefined;
 
-  constructor() { }
+  constructor(private workdaysService: WorkdaysService) { }
 
   ngOnInit(): void {
+    this.isWorkdayComplete = (this.getCurrentTask() === undefined);
     this.isPomodoroActive = false;
     this.startPomodoro$ = new Subject();
     this.cancelPomodoro$ = new Subject();
@@ -69,10 +72,14 @@ export class DashboardWorkdayComponent implements OnInit {
     if(this.currentTask) {
       this.currentTask.done++;
     }
+
+    // On vérifie si la journée de travail est terminée.
+    this.isWorkdayComplete = (this.getCurrentTask() === undefined);
+
   }
 
   getCurrentTask(): Task|undefined {
-    return this.workday.tasks.find(task => task.todo > task.done)
+    return this.workday.tasks.find(task => task.todo > task.done) // find retourne le 1er élément du tableau.
   }
 
 }
